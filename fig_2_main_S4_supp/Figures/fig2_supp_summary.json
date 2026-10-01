@@ -1,0 +1,106 @@
+[
+  {
+    "panel": "a",
+    "model": "wr",
+    "nonideal": false,
+    "plotted": 100000,
+    "fixed": 78054,
+    "cycle": 21533,
+    "chaos": 413,
+    "limits": [
+      1e-08,
+      100000.0
+    ]
+  },
+  {
+    "panel": "a",
+    "model": "wr",
+    "nonideal": true,
+    "plotted": 100000,
+    "fixed": 80937,
+    "cycle": 17325,
+    "chaos": 1738,
+    "limits": [
+      1e-08,
+      100000.0
+    ]
+  },
+  {
+    "panel": "b",
+    "model": "brusselator",
+    "nonideal": false,
+    "plotted": 100000,
+    "fixed": 26192,
+    "cycle": 73808,
+    "chaos": 0,
+    "limits": [
+      0.01,
+      10000000.0
+    ]
+  },
+  {
+    "panel": "b",
+    "model": "brusselator",
+    "nonideal": true,
+    "plotted": 100000,
+    "fixed": 35525,
+    "cycle": 64475,
+    "chaos": 0,
+    "limits": [
+      0.01,
+      10000000.0
+    ]
+  },
+  {
+    "panel": "c",
+    "model": "oregonator",
+    "nonideal": false,
+    "plotted": 100000,
+    "fixed": 10512,
+    "cycle": 89488,
+    "chaos": 0,
+    "limits": [
+      0.01,
+      1000.0
+    ]
+  },
+  {
+    "panel": "c",
+    "model": "oregonator",
+    "nonideal": true,
+    "plotted": 100000,
+    "fixed": 13026,
+    "cycle": 86974,
+    "chaos": 0,
+    "limits": [
+      0.01,
+      1000.0
+    ]
+  },
+  {
+    "panel": "d",
+    "model": "cs14",
+    "nonideal": false,
+    "plotted": 100000,
+    "fixed": 22101,
+    "cycle": 45844,
+    "chaos": 32055,
+    "limits": [
+      0.01,
+      10000000.0
+    ]
+  },
+  {
+    "panel": "d",
+    "model": "cs14",
+    "nonideal": true,
+    "plotted": 100000,
+    "fixed": 26035,
+    "cycle": 42517,
+    "chaos": 31448,
+    "limits": [
+      0.01,
+      10000000.0
+    ]
+  }
+]

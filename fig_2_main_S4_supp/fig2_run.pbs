@@ -1,0 +1,56 @@
+#!/bin/bash
+#PBS -N crn_fig2
+#PBS -l select=1:ncpus=80:mem=32gb
+#PBS -l walltime=08:00:00
+#PBS -j oe
+
+# Figure 2, main job: checks the engine, samples with every core of its node, waits for any
+# helper jobs (fig2_helper.pbs) to finish, then writes the CSV, both figures, the independent
+# re-check of cycles/chaos, the numbers for the manuscript, and the CSV as 99 MB gzip pieces
+# for GitHub (data_fig2/publish/).
+# Submit:  qsub fig2_run.pbs          (test run:  qsub -v TEST=30,OUT=data_test fig2_run.pbs)
+
+cd "$PBS_O_WORKDIR"
+module load python/3.8.8
+source ~/venvs/crn/bin/activate
+
+export NCPUS=${NCPUS:-80}
+export NUMBA_NUM_THREADS=1          # parallel over processes (one per core), not threads
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMBA_CACHE_DIR=${TMPDIR:-/tmp}/numba_cache_$USER
+
+OUT=${OUT:-data_fig2}                # all results; helpers must use the same folder
+FIG=${FIG:-Figures}
+RUN_SECONDS=${RUN_SECONDS:-23400}    # stop taking new inputs after 6.5 h (walltime 8 h)
+TESTARGS=""; PLOTARGS=""; CSV=$OUT/fig_2_inputs.csv
+if [ -n "${TEST:-}" ]; then TESTARGS="--test-target $TEST"; PLOTARGS="--test-input"; CSV=$OUT/fig_2_inputs_test.csv; FIG=${FIG}_test; fi
+command -v latex >/dev/null 2>&1 || PLOTARGS="$PLOTARGS --no-tex"
+mkdir -p "$OUT/logs"; LOG=$OUT/logs/run.log
+
+echo "$(date)  start on $(hostname) with $NCPUS cores" > $LOG
+python3 validate_numerics.py --output $OUT/validation >> $LOG 2>&1 || { echo "validation failed" >> $LOG; exit 1; }
+python3 fig_2_input_selected.py --output $OUT --init $TESTARGS >> $LOG 2>&1 || exit 1
+python3 fig_2_input_selected.py --output $OUT --workers $NCPUS --finish --run-seconds $RUN_SECONDS $TESTARGS >> $LOG 2>&1 \
+    || { echo "sampling not complete: qsub fig2_run.pbs again, it continues where it stopped" >> $LOG; exit 1; }
+python3 fig_2_main_plot.py --input $CSV --output $FIG --audit-dir $OUT/main_selection $PLOTARGS >> $LOG 2>&1
+python3 fig_2_supp_plt.py  --input $CSV --output $FIG $PLOTARGS >> $LOG 2>&1
+python3 verify_attractors.py --input $CSV --output $OUT/verify --n-cycle 200 --n-chaos 200 --workers $NCPUS >> $LOG 2>&1
+python3 fig_2_stats.py --input $CSV --sampling $OUT --main-audit $OUT/main_selection --supp-summary $FIG/fig2_supp_summary.json \
+        --verify $OUT/verify/verify_summary.json --output $OUT/stats >> $LOG 2>&1
+
+# Pieces for GitHub (at most 100 MB per file): gzip the CSV, then cut the .gz into 99 MB pieces.
+# The CSV itself is kept. Upload everything in $OUT/publish/ to the folder data_fig2/ of the repository.
+PUB=$OUT/publish; NAME=$(basename $CSV)
+mkdir -p $PUB; rm -f $PUB/$NAME.gz $PUB/$NAME.gz.part* $PUB/$NAME.gz.sha256        # no pieces of an older run
+gzip -9 -c $CSV > $PUB/$NAME.gz
+( cd $PUB && sha256sum $NAME.gz > $NAME.gz.sha256 && split -b 99000000 -d -a 2 $NAME.gz $NAME.gz.part )
+if [ "$(cat $PUB/$NAME.gz.part* | sha256sum | cut -d' ' -f1)" = "$(cut -d' ' -f1 $PUB/$NAME.gz.sha256)" ]; then
+    rm -f $PUB/$NAME.gz
+    echo "pieces for GitHub: $(ls $PUB/$NAME.gz.part* | wc -l) x <= 99 MB in $PUB (joined checksum OK)" >> $LOG
+else
+    echo "WARNING: the joined pieces do not match $NAME.gz; kept $PUB/$NAME.gz for inspection" >> $LOG
+fi
+
+echo "$(date)  done: $FIG/fig2_motion.pdf, $FIG/fig2_supp.pdf, $OUT/stats/fig_2_stats.md, $PUB/" >> $LOG

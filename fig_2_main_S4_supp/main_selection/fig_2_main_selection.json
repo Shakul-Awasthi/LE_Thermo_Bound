@@ -1,0 +1,68 @@
+{
+  "seed": 20260927,
+  "cell_decades": 0.2,
+  "limits": [
+    0.01,
+    1000.0
+  ],
+  "cap": 35,
+  "min_per_cell": 1,
+  "even_level": 12,
+  "occupied_cells": 156,
+  "per_class_requested": 1000,
+  "cells_with_points": 156,
+  "coloured_points": 2000,
+  "per_class": {
+    "cycle": 1000,
+    "chaos_candidate": 1000
+  },
+  "equal_classes": false,
+  "per_cell_min": 1,
+  "per_cell_max": 35,
+  "per_model": {
+    "wr": {
+      "ideal": 199,
+      "nonideal": 199
+    },
+    "brusselator": {
+      "ideal": 19,
+      "nonideal": 19
+    },
+    "oregonator": {
+      "ideal": 287,
+      "nonideal": 287
+    },
+    "cs14": {
+      "ideal": 495,
+      "nonideal": 495
+    }
+  },
+  "moving_outside_window": 10,
+  "solver": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+  "input": "data_fig2/fig_2_inputs.csv",
+  "rows": 800000,
+  "per_case": {
+    "wr/ideal": 100000,
+    "wr/nonideal": 100000,
+    "brusselator/ideal": 100000,
+    "brusselator/nonideal": 100000,
+    "oregonator/ideal": 100000,
+    "oregonator/nonideal": 100000,
+    "cs14/ideal": 100000,
+    "cs14/nonideal": 100000
+  },
+  "fixed_points": 292382,
+  "fixed_drawn": 205371,
+  "points_under_inset": 0,
+  "fixed_under_inset": 49,
+  "inset_position": [
+    0.64,
+    0.09
+  ],
+  "fixed_outside_window": 87011,
+  "moving_total": 507618,
+  "saturation_max": 0.5300990523783216,
+  "motion_cost_violations": 0,
+  "all_outside_window": 87021,
+  "test_input": false
+}

@@ -1,0 +1,53 @@
+{
+  "cycle": {
+    "checked": 200,
+    "verified": 200,
+    "failed": [],
+    "max_closure": 1.9510775846151004e-08,
+    "max_nontrivial_floquet": 0.9938445704300686,
+    "max_drift_20_periods": 5.746247744453972e-07
+  },
+  "chaos": {
+    "checked": 200,
+    "verified": 198,
+    "failed": [
+      {
+        "point_id": "724ac0fbc2f2cff170f5c9de",
+        "model": "cs14",
+        "lambda1_windows": [
+          0.05756011312021997,
+          0.06105713901888945,
+          0.05588853392067697,
+          0.04711025355108355
+        ],
+        "lambda1_long": 0.05540400990271749,
+        "lambda1_csv": 0.039269845079321984,
+        "relative_difference": 0.410853793561084,
+        "min_amplitude": 3.6947950089254062,
+        "verified": false,
+        "nonideal": "False",
+        "seconds": 176.21660312637687
+      },
+      {
+        "point_id": "243d710251c345e5d30e39d6",
+        "model": "cs14",
+        "lambda1_windows": [
+          0.07691578254183087,
+          4.2937241333659415e-05,
+          -0.00040295048003938304,
+          -2.3275479179820558e-05
+        ],
+        "lambda1_long": 0.01913312345598633,
+        "lambda1_csv": 0.09927199837059035,
+        "relative_difference": -0.8072656562774042,
+        "min_amplitude": 3.3635307464182316,
+        "verified": false,
+        "nonideal": "False",
+        "seconds": 150.3737718835473
+      }
+    ],
+    "median_abs_rel_diff_lambda1": 0.034888814804193494,
+    "max_abs_rel_diff_lambda1": 0.8072656562774042,
+    "min_window_lambda1": -0.00040295048003938304
+  }
+}

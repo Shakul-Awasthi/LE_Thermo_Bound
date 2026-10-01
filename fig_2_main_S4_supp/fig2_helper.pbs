@@ -1,0 +1,30 @@
+#!/bin/bash
+#PBS -N crn_fig2_help
+#PBS -l select=1:ncpus=20:mem=16gb
+#PBS -l walltime=07:00:00
+#PBS -j oe
+
+# Figure 2, helper job (optional): joins a running or queued fig2_run.pbs and samples with every
+# core of its node. Submit as many as there are free nodes; set the node size on the command line:
+#   qsub -l select=1:ncpus=48:mem=32gb fig2_helper.pbs
+# Helpers may start before, with or after the main job, and may stop at any time: blocks they
+# leave unfinished are redone by the others. They write no figures.
+
+cd "$PBS_O_WORKDIR"
+module load python/3.8.8
+source ~/venvs/crn/bin/activate
+
+export NCPUS=${NCPUS:-20}
+export NUMBA_NUM_THREADS=1
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMBA_CACHE_DIR=${TMPDIR:-/tmp}/numba_cache_$USER
+
+OUT=${OUT:-data_fig2}                # must be the folder of the main job
+RUN_SECONDS=${RUN_SECONDS:-21600}    # stop taking new inputs after 6 h (walltime 7 h)
+TESTARGS=""; [ -n "${TEST:-}" ] && TESTARGS="--test-target $TEST"
+mkdir -p "$OUT/logs"
+
+python3 fig_2_input_selected.py --output $OUT --workers $NCPUS --helper --run-seconds $RUN_SECONDS $TESTARGS \
+        > $OUT/logs/helper_$(hostname -s)_${PBS_JOBID%%.*}.log 2>&1

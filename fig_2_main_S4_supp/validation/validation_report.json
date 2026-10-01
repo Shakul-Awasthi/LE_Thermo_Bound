@@ -1,0 +1,33 @@
+{
+  "engine": "4.0-numba",
+  "algebra": {
+    "jacobian": 2.989211265036974e-10,
+    "split": 3.8782580700507414e-16,
+    "terms": 1.5373208568286367e-15,
+    "identity": 5.132274229286862e-16,
+    "detailed_balance": 1.4210854715202004e-14
+  },
+  "integrator": {
+    "wr": {
+      "state_rel_error": 7.685557188231546e-11,
+      "liouville_error": 5.322464691204232e-12,
+      "stretch_error": 3.115285807098189e-13
+    },
+    "brusselator": {
+      "state_rel_error": 1.951295443509641e-12,
+      "liouville_error": 2.2287949263954943e-11,
+      "stretch_error": 3.4675595728117514e-12
+    },
+    "oregonator": {
+      "state_rel_error": 4.703540091082814e-13,
+      "liouville_error": 2.709832358505082e-11,
+      "stretch_error": 8.870681966755001e-14
+    },
+    "cs14": {
+      "state_rel_error": 1.7103481529872223e-11,
+      "liouville_error": 7.765343923438195e-12,
+      "stretch_error": 1.5964174426841282e-12
+    }
+  },
+  "status": "PASS"
+}
