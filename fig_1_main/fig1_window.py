@@ -32,8 +32,20 @@ wK = np.sqrt(spsK * BK)
 print("regimes:", {c: int((clsK == c).sum()) for c in ("fixed", "cycle", "chaos")},
       " max departure/window: %.2f" % np.max(np.abs(lamK + DelK) / wK))
 
-fig = plt.figure(figsize=(3.4, 4.25))
-gs = gridspec.GridSpec(2, 1, height_ratios=[0.73, 1.16], hspace=0.45, left=0.15, right=0.90, bottom=0.095, top=0.90)
+# Layout in inches. Panel (c) is 40% shorter (0.75 x 0.80) than in the original 3.4 x 4.25 in figure; the margins,
+# panels (a)-(b), and the gap between the rows keep their original sizes, so the figure is shorter.
+C_SCALE = 0.60                               # height of panel (c) relative to the original
+H0 = 4.25                                    # original figure height (in)
+_u = (0.90 - 0.095) * H0 / (0.73 + 1.16 + 0.45 * 0.5 * (0.73 + 1.16))   # original row unit (in)
+H_TOP, H_C, H_GAP = 0.73 * _u, 1.16 * _u * C_SCALE, 0.45 * 0.5 * (0.73 + 1.16) * _u
+M_TOP, M_BOT = (1 - 0.90) * H0, 0.095 * H0
+FIG_H = M_TOP + H_TOP + H_GAP + H_C + M_BOT
+def fy(inch_from_top):
+    """figure-fraction y coordinate of a point given in inches below the top edge"""
+    return 1 - inch_from_top / FIG_H
+fig = plt.figure(figsize=(3.4, FIG_H))
+gs = gridspec.GridSpec(2, 1, height_ratios=[H_TOP, H_C], hspace=H_GAP / (0.5 * (H_TOP + H_C)),
+                       left=0.15, right=0.90, bottom=M_BOT / FIG_H, top=1 - M_TOP / FIG_H)
 gtop = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0], width_ratios=[0.95, 1.0], wspace=0.6)
 
 # ---- (a) attractor in the coordinates u = 2 sqrt(x), coloured by lambda_H ----------------
@@ -53,7 +65,7 @@ cax = ax.inset_axes([0.0, 1.07, 1.0, 0.07])
 cb = fig.colorbar(lc, cax=cax, orientation="horizontal")
 cb.set_ticks([-0.5, 0, 0.5]); cb.ax.tick_params(labelsize=6.5, length=2, labeltop=True, labelbottom=False, top=True, bottom=False)
 cax.text(1.04, 0.5, r"$\lambda_H$", transform=cax.transAxes, fontsize=8, ha="left", va="center")
-fig.text(0.02, 0.975, r"(a)", fontsize=9, ha="left", va="top")
+fig.text(0.02, fy(0.025 * H0), r"(a)", fontsize=9, ha="left", va="top")
 ax.plot([0.92], [0.92], transform=ax.transAxes, marker="*", ms=8, mfc="gold", mec="k", mew=0.6, ls="none", clip_on=False)
 ax.tick_params(length=2.5, labelsize=7)
 
@@ -105,9 +117,9 @@ for i, (lo, hi, name, col, ticks) in enumerate(SEG):
     b.set_xticks([0.5 * (lo + hi)]); b.set_xticklabels(["%.1f" % (0.5 * (lo + hi))], fontsize=6.5)
     b.tick_params(length=2.5, labelleft=(i == 0), left=(i == 0), labelsize=7)
 B[0].set_ylabel(r"$\lambda_1$", labelpad=1); B[0].set_yticks([0, 0.01, 0.02]); B[0].set_yticklabels(["0", "0.01", "0.02"])
-fig.text(0.53, 0.975, r"(b)", fontsize=9, ha="left", va="top")
+fig.text(0.53, fy(0.025 * H0), r"(b)", fontsize=9, ha="left", va="top")
 bb0 = B[0].get_position(); bb2 = B[2].get_position()
-fig.text(0.5 * (bb0.x0 + bb2.x1), bb0.y0 - 0.052, r"$k_{+5}$", ha="center", va="top", fontsize=9)
+fig.text(0.5 * (bb0.x0 + bb2.x1), bb0.y0 - 0.052 * H0 / FIG_H, r"$k_{+5}$", ha="center", va="top", fontsize=9)
 B[2].plot([K_STAR], [lamK[i_star]], **star)
 breakmarks(B[0], B[1])
 B[1].spines["right"].set_visible(False); B[2].spines["left"].set_visible(False)
@@ -132,7 +144,7 @@ C[0].text(-0.3, 1.03, r"(c)", transform=C[0].transAxes, fontsize=9, ha="left", v
 C[1].text(0.5, 0.80, r"$\sqrt{\overline\sigma_{\rm ps}\overline B_1}$", transform=C[1].transAxes, fontsize=8, color="#3182bd", ha="center")
 C[1].text(0.5, 0.22, r"$|\lambda_1+\overline\Delta_1|$", transform=C[1].transAxes, fontsize=8, ha="center")
 cc0 = C[0].get_position(); cc2 = C[2].get_position()
-fig.text(0.5 * (cc0.x0 + cc2.x1), cc0.y0 - 0.062, r"$k_{+5}$", ha="center", va="top", fontsize=9)
+fig.text(0.5 * (cc0.x0 + cc2.x1), cc0.y0 - 0.062 * H0 / FIG_H, r"$k_{+5}$", ha="center", va="top", fontsize=9)
 C[2].plot([K_STAR], [wK[i_star]], **star); C[2].plot([K_STAR], [abs(lamK[i_star] + DelK[i_star])], **star)
 breakmarks(C[0], C[1])
 C[1].spines["right"].set_visible(False); C[2].spines["left"].set_visible(False)
