@@ -65,7 +65,6 @@ cax = ax.inset_axes([0.0, 1.07, 1.0, 0.07])
 cb = fig.colorbar(lc, cax=cax, orientation="horizontal")
 cb.set_ticks([-0.5, 0, 0.5]); cb.ax.tick_params(labelsize=6.5, length=2, labeltop=True, labelbottom=False, top=True, bottom=False)
 cax.text(1.04, 0.5, r"$\lambda_H$", transform=cax.transAxes, fontsize=8, ha="left", va="center")
-fig.text(0.02, fy(0.025 * H0), r"(a)", fontsize=9, ha="left", va="top")
 ax.plot([0.92], [0.92], transform=ax.transAxes, marker="*", ms=8, mfc="gold", mec="k", mew=0.6, ls="none", clip_on=False)
 ax.tick_params(length=2.5, labelsize=7)
 
@@ -117,9 +116,6 @@ for i, (lo, hi, name, col, ticks) in enumerate(SEG):
     b.set_xticks([0.5 * (lo + hi)]); b.set_xticklabels(["%.1f" % (0.5 * (lo + hi))], fontsize=6.5)
     b.tick_params(length=2.5, labelleft=(i == 0), left=(i == 0), labelsize=7)
 B[0].set_ylabel(r"$\lambda_1$", labelpad=1); B[0].set_yticks([0, 0.01, 0.02]); B[0].set_yticklabels(["0", "0.01", "0.02"])
-fig.text(0.53, fy(0.025 * H0), r"(b)", fontsize=9, ha="left", va="top")
-bb0 = B[0].get_position(); bb2 = B[2].get_position()
-fig.text(0.5 * (bb0.x0 + bb2.x1), bb0.y0 - 0.052 * H0 / FIG_H, r"$k_{+5}$", ha="center", va="top", fontsize=9)
 B[2].plot([K_STAR], [lamK[i_star]], **star)
 breakmarks(B[0], B[1])
 B[1].spines["right"].set_visible(False); B[2].spines["left"].set_visible(False)
@@ -140,15 +136,37 @@ for i, (lo, hi, name, col, ticks) in enumerate(SEG):
     c.set_xticklabels([("%g" % t) for t in ticks], fontsize=7)
     c.text(0.5, 1.03, name, transform=c.transAxes, color=col, fontsize=7.5, ha="center", va="bottom")
 C[0].set_ylabel(r"rate", labelpad=1); C[0].set_yticks([0.3, 1, 3]); C[0].set_yticklabels(["0.3", "1", "3"])
-C[0].text(-0.3, 1.03, r"(c)", transform=C[0].transAxes, fontsize=9, ha="left", va="bottom")
 C[1].text(0.5, 0.80, r"$\sqrt{\overline\sigma_{\rm ps}\overline B_1}$", transform=C[1].transAxes, fontsize=8, color="#3182bd", ha="center")
 C[1].text(0.5, 0.22, r"$|\lambda_1+\overline\Delta_1|$", transform=C[1].transAxes, fontsize=8, ha="center")
-cc0 = C[0].get_position(); cc2 = C[2].get_position()
-fig.text(0.5 * (cc0.x0 + cc2.x1), cc0.y0 - 0.062 * H0 / FIG_H, r"$k_{+5}$", ha="center", va="top", fontsize=9)
 C[2].plot([K_STAR], [wK[i_star]], **star); C[2].plot([K_STAR], [abs(lamK[i_star] + DelK[i_star])], **star)
 breakmarks(C[0], C[1])
 C[1].spines["right"].set_visible(False); C[2].spines["left"].set_visible(False)
 C[1].axvline(k_ch, color="0.4", lw=0.6, ls="--")
+
+# ---- trim the empty band above the panels -------------------------------------------------
+# The top margin was sized generously; measure where the highest drawn element (the colour bar
+# of panel (a) with its tick labels) actually ends and shrink the figure from the top so that it
+# sits PAD_TOP below the edge. All row heights and the bottom margin keep their sizes in inches.
+PAD_TOP = 0.03                                   # inches between the highest element and the top edge
+fig.canvas.draw()
+ren = fig.canvas.get_renderer()
+top_px = max(a.get_tightbbox(ren).y1 for a in fig.axes)
+slack = FIG_H - top_px / fig.dpi - PAD_TOP       # unused height at the top (in)
+M_TOP -= slack; FIG_H -= slack
+fig.set_size_inches(3.4, FIG_H)
+gs.update(top=1 - M_TOP / FIG_H, bottom=M_BOT / FIG_H)
+fig.canvas.draw()
+
+# panel labels level with the top of the content, axis labels below the tick labels
+top_frac = 1 - PAD_TOP / FIG_H
+fig.text(0.02, top_frac, r"(a)", fontsize=9, ha="left", va="top")
+fig.text(0.53, top_frac, r"(b)", fontsize=9, ha="left", va="top")
+# (c) in the same column as (a), at the height of the region names above panel (c)
+fig.text(0.02, C[0].get_position().y1 + 0.03 * C[0].get_position().height, r"(c)", fontsize=9, ha="left", va="bottom")
+bb0 = B[0].get_position(); bb2 = B[2].get_position()
+fig.text(0.5 * (bb0.x0 + bb2.x1), bb0.y0 - 0.221 / FIG_H, r"$k_{+5}$", ha="center", va="top", fontsize=9)
+cc0 = C[0].get_position(); cc2 = C[2].get_position()
+fig.text(0.5 * (cc0.x0 + cc2.x1), cc0.y0 - 0.2635 / FIG_H, r"$k_{+5}$", ha="center", va="top", fontsize=9)
 
 fig.savefig("fig1_window.pdf", dpi=300)
 fig.savefig("fig1_window.png", dpi=200)
